@@ -2,6 +2,8 @@
 * text=auto
 *.h5 filter=lfs diff=lfs merge=lfs -text
 *.qt filter=lfs diff=lfs merge=lfs -text
+Models/*.qt filter=lfs diff=lfs merge=lfs -text
+Models/*.h5 filter=lfs diff=lfs merge=lfs -text
 /Models/model_unet_vgg_16_best.pt filter=lfs diff=lfs merge=lfs -text
 /PredictImage filter=lfs diff=lfs merge=lfs -text
 /sample.txt filter=lfs diff=lfs merge=lfs -text
