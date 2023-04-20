@@ -16,6 +16,5 @@ keras.models
 tensorflow
 torch
 torchvision==0.15.1
-tqdm==0.4.6
-json
+tqdm
 requests
