@@ -1,7 +1,7 @@
 matplotlib
 requests
-torch
-torchvision==0.15.1
+torch==1.8.1+cpu 
+torchvision==0.9.1+cpu
 uvicorn==0.20.0
 gunicorn==19.9.0
 fastapi
