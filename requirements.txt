@@ -13,4 +13,3 @@ Pillow==9.3.0
 keras.models
 pathlib==1.0.1
 opencv-python
-tensorflow-cpu
