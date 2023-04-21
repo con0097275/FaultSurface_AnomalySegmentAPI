@@ -1,15 +1,9 @@
 
 import numpy as np
 from PIL import Image
-from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model
-import urllib.request
 from utils import load_unet_vgg16, load_unet_resnet_101, load_unet_resnet_34
-from tqdm import tqdm
-from os.path import join
-from pathlib import Path
 import cv2 as cv
-import torch.nn.functional as F
 from torch.autograd import Variable
 from unet.unet_transfer import UNet16, input_size
 import torchvision.transforms as transforms

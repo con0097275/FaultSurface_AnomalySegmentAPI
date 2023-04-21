@@ -1,12 +1,6 @@
 import json
 from datetime import datetime
-from pathlib import Path
-
-import random
-import numpy as np
-
 import torch
-import tqdm
 from unet.unet_transfer import UNet16, UNetResNet
 
 

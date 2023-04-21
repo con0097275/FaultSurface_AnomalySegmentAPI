@@ -4,14 +4,9 @@
 import uvicorn
 from fastapi import FastAPI
 from ImageNotes import ImageNote
-import numpy as np
-import pickle
-import pandas as pd
 # from main import TypePrediction, segment_image,saveResult
 from main  import predictImage
-import datetime
-import json
-import requests
+
 
 # 2. Create the app object
 app = FastAPI()
