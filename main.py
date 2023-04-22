@@ -76,7 +76,6 @@ def evaluate_img(model, img):
 
 def find_name():
     arr_img=glob.glob("./test_imgs/*")
-    
     arr_img=list(map(lambda x: x.rsplit("\\",1)[-1] ,arr_img))
     arr_num= list(map(int,filter(lambda t: t.isnumeric(),map(lambda x: x.split(".",1)[0] ,arr_img))))
     if (len(arr_img)==0):
