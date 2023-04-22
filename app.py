@@ -5,7 +5,6 @@ from ImageNotes import ImageNote
 # from main import TypePrediction, segment_image,saveResult
 from main  import predictImage
 
-
 # 2. Create the app object
 app = FastAPI()
 
