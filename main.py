@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 from keras.models import load_model
 from utils import load_unet_vgg16, load_unet_resnet_101, load_unet_resnet_34
-import cv2 as cv
+import cv2
 from torch.autograd import Variable
 from unet.unet_transfer import UNet16, input_size
 import torchvision.transforms as transforms
@@ -16,6 +16,8 @@ import requests
 import json
 import torch
 import datetime
+import pytz
+
 
 #Load the trained model. (Pickle file)
 classify_model = load_model('./Models/VGG16_batchsize=32_epo=10.h5')
@@ -58,7 +60,7 @@ else:
 def evaluate_img(model, img):
     input_width, input_height = input_size[0], input_size[1]
     img_height, img_width, img_channels = img.shape
-    img_1 = cv.resize(img, (input_width, input_height), cv.INTER_AREA)
+    img_1 = cv2.resize(img, (input_width, input_height), cv2.INTER_AREA)
     channel_means = [0.485, 0.456, 0.406]
     channel_stds  = [0.229, 0.224, 0.225]
     train_tfms = transforms.Compose([transforms.ToTensor(), transforms.Normalize(channel_means, channel_stds)])
@@ -70,7 +72,7 @@ def evaluate_img(model, img):
     mask = model(X)
 
     mask = torch.sigmoid(mask[0, 0]).data.cpu().numpy()
-    mask = cv.resize(mask, (img_width, img_height), cv.INTER_AREA)
+    mask = cv2.resize(mask, (img_width, img_height), cv2.INTER_AREA)
     return mask
 
 
@@ -90,7 +92,6 @@ def find_name():
     #     my_string = base64.b64encode(img_file.read())
 
 def segment_image(im_file):
-    
 
     img_dir= 'test_imgs'
     
@@ -98,9 +99,13 @@ def segment_image(im_file):
     out_pred_dir='test_imgs_pred'
     # threshold =0.2
 
-    # #test
-    # with open(join(img_dir, "crack_in_large_context_01.jpg"), "rb") as img_file:
+    # # #test
+    # with open(os.path.join(img_dir, "CFD_036.jpg"), "rb") as img_file:
     #     my_string = base64.b64encode(img_file.read())
+        
+    # f = open("sample1.txt", "wb")
+    # f.write(my_string)
+    # f.close()
 
     if out_viz_dir != '':
         os.makedirs(out_viz_dir, exist_ok=True)
@@ -115,7 +120,7 @@ def segment_image(im_file):
     # img_0 = Image.open(im_file)
     filename= find_name()  #file name to save result
     img_0=im_file
-    img_0.save(os.path.join(img_dir,filename))   ## save input image
+    # img_0.save(os.path.join(img_dir,filename))   ## save input image
     img_0 = np.asarray(img_0)
     
 
@@ -130,9 +135,9 @@ def segment_image(im_file):
 
 
     ##save image mask:
-    plt.imsave(os.path.join(out_pred_dir,filename), prob_map_full, cmap='gray')
+    # plt.imsave(os.path.join(out_pred_dir,filename), prob_map_full, cmap='gray')
 
-
+    ########### test
     plt.clf()
     plt.imshow(img_0)
     plt.imshow(prob_map_full, alpha=0.4)
@@ -146,7 +151,7 @@ def segment_image(im_file):
     with open(os.path.join(out_viz_dir,filename), "rb") as img_file_t:
         output = base64.b64encode(img_file_t.read())
     # print(output.decode("utf-8"))
-
+    ##############
     return output.decode("utf-8")
 
 
@@ -157,7 +162,7 @@ def saveResult(result):
         "collection": "fault_detection",
         "database": "thesis",
         "dataSource": "Cluster0",
-        "document": {'date':result['date'], 'original_image': result['original_image'], 'prediction': result['prediction'],'type':result['type'], 'segment_image':result['segment_image']}
+        "document": {'building': str(result.get('building',"")),'date':result['date'], 'original_image': result['original_image'], 'prediction': result['prediction'],'type':result['type'], 'segment_image':result['segment_image']}
     })
     headers = {
     'Content-Type': 'application/json',
@@ -183,14 +188,13 @@ def predictImage(img):
     else:
         type="Normal"
     result= {
-        'date': str(datetime.datetime.now()),
+        'date': str(datetime.datetime.now(pytz.timezone('Asia/Ho_Chi_Minh') )),
         'original_image':img,
         'prediction': float(pred),
         'type': type,
         'segment_image': segment_img     #edit
         # 'segment_image': 'segment_img'
     }
-    saveResult(result)
     return result
 
 

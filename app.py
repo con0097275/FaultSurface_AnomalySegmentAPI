@@ -3,7 +3,7 @@ import uvicorn
 from fastapi import FastAPI
 from ImageNotes import ImageNote
 # from main import TypePrediction, segment_image,saveResult
-from main  import predictImage
+from main  import predictImage, saveResult
 
 # 2. Create the app object
 app = FastAPI()
@@ -25,7 +25,11 @@ def get_name(name: str):
 def predict_crack(data:ImageNote):
     data = data.dict()
     img=data['image']
+    building= data['building']
     result= predictImage(img)
+    
+    result['building']=building
+    saveResult(result)
     # pred= TypePrediction(img)
     # image_base64= segment_image(img)
 

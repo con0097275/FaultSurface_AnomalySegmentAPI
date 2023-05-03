@@ -9,6 +9,7 @@ fastapi
 pydantic
 numpy
 Pillow==9.3.0
-keras.models
+tensorflow-cpu==2.11.0
 pathlib==1.0.1
 opencv-python
+pytz
