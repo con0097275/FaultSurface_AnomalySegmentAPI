@@ -26,50 +26,17 @@ def predict_crack(data:ImageNote):
     data = data.dict()
     img=data['image']
     building= data['building']
-    result= predictImage(img)
-    
-    result['building']=building
-    saveResult(result)
-    # pred= TypePrediction(img)
-    # image_base64= segment_image(img)
-
-    # # print(pred)
-    # if(pred>0.5):
-    #     type="Have crack"
-    # else:
-    #     type="Have no crack"
-
-    # result= {
-    #     'date': str(datetime.datetime.now()),
-    #     'original_image':img,
-    #     'prediction': pred,
-    #     'type': type,
-    #     'segment_image': image_base64
-    # }
-
-    # print(result)
-    # # saveResult(result)     ## save input and output result in mongodb database Atlas
-    # url = "https://ap-southeast-1.aws.data.mongodb-api.com/app/data-wlatu/endpoint/data/v1/action/insertOne"
-    # payload = json.dumps({
-    # "collection": "fault_detection",
-    # "database": "thesis",
-    # "dataSource": "Cluster0",
-    # "document": {'date':result['date'], 'original_image': result['original_image'], 'prediction': result['prediction'],'type':result['type'], 'segment_image':result['segment_image']}
-    # })
-    # headers = {
-    # 'Content-Type': 'application/json',
-    # 'Access-Control-Request-Headers': '*',
-    # 'api-key': 'LFyT8MWcEraGxtCsMJpceBO8q72WLX8mInon25j6kbVCgv2j5vSwVYzNVzdxFsqh', 
-    # }
-
-    # response = requests.request("POST", url, headers=headers, data=payload)
-    # print(response.text)
-    
+    (result,anomaly)= predictImage(img)
+    if (anomaly):
+        result['building']=building
+        saveResult(result)     
     return {
-        'prediction': str(result['prediction']),
-        'type': result['type'],
-        'image': result['segment_image']
+        'anomaly':str(anomaly),
+        'prediction': str(result.get('prediction',"")),
+        'type': result.get('type',""),
+        'image': result.get('segment_image',"")
     }
+
 
     # return {
     #     'prediction': str(pred)
