@@ -39,7 +39,7 @@ import pytz
 
 
 
-def detect_crack(im_file, loc_thres=39, thres=52):   ## dectect tổng số điểm bao vết nứt cho 4 góc gabor
+def detect_crack(im_file, loc_thres=39, thres=25):   ## dectect tổng số điểm bao vết nứt cho 4 góc gabor
     #read image
     image= cv2.resize(cv2.cvtColor(np.asarray(im_file), cv2.COLOR_RGB2BGR) , (448,448) , interpolation=cv2.INTER_AREA)
     count=0
@@ -61,7 +61,7 @@ def detect_crack(im_file, loc_thres=39, thres=52):   ## dectect tổng số đi�
     return False
 
 #Load the trained model. (Pickle file)
-classify_model = load_model('./Models/VGG16_batchsize=32_epo=10.h5')
+classify_model = load_model('./Models/VGG16_batchsize=6_final.h5')
 
 def TypePrediction(im_file):
     SIZE = 150 
@@ -78,8 +78,14 @@ def TypePrediction(im_file):
     
     img = np.expand_dims(img, axis=0)  #Get it tready as input to the network       
     
-    pred = classify_model.predict(img) #Predict    
-    return round(pred[0][0],4)
+    pred = classify_model.predict(img) #Predict 
+    prob = np.array(pred[0]) 
+    classes = ["Peeling","Crack", "Normal"]
+
+    print(pred[0])
+    print("-"*50)
+    print((round(prob[np.argmax(prob)],4), classes[np.argmax(prob)]) )
+    return (round(prob[np.argmax(prob)],4),classes[np.argmax(prob)]) 
 
 
 # # model predict segmentation:
@@ -206,7 +212,7 @@ def saveResult(result):
         "collection": "fault_detection",
         "database": "thesis",
         "dataSource": "Cluster0",
-        "document": {'building': str(result.get('building',"")),'date':result['date'], 'original_image': result['original_image'], 'prediction': result['prediction'],'type':result['type'], 'segment_image':result['segment_image']}
+        "document": {'building': str(result.get('building',"")),'date':result['date'], 'original_image': result['original_image'], 'prediction': result['prediction'],'type':result['type'], 'segment_image':result.get('segment_image',"")}
     })
     headers = {
     'Content-Type': 'application/json',
@@ -226,14 +232,17 @@ def predictImage(img):
     
     anomaly =  detect_crack(im_file)
     if (anomaly):  
-        pred= TypePrediction(im_file)
-        segment_img= segment_image(im_file)    #edit
-
-        # print(pred)
-        if(pred>0.5):
-            type="Crack"
+        (pred,type)  = TypePrediction(im_file)
+        if (type == 'Crack'):
+            segment_img= segment_image(im_file)    #edit
         else:
-            type="Normal"
+            segment_img=""
+
+        # # print(pred)
+        # if(pred>0.5):
+        #     type="Crack"
+        # else:
+        #     type="Normal"
         result= {
             'date': str(datetime.datetime.now(pytz.timezone('Asia/Ho_Chi_Minh') )),
             'original_image':img,
